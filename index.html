@@ -5,242 +5,255 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Halaman admin sederhana untuk CRUD absensi karyawan.">
     <title>Admin Absensi Karyawan</title>
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Backstrap CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/@digitallyhappy/backstrap@0.5.1/dist/css/style.min.css">
     <link rel="stylesheet" href="css/styles.css">
   </head>
-  <body class="app header-fixed sidebar-fixed sidebar-lg-show">
+  <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">
     <header class="app-header navbar">
-      <button class="navbar-toggler" id="sidebarToggle" type="button" aria-label="Buka atau tutup sidebar">
-        <span></span>
-        <span></span>
-        <span></span>
+      <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" id="sidebarToggle" type="button" data-toggle="sidebar-show">
+        <span class="navbar-toggler-icon"></span>
       </button>
-      <a class="navbar-brand" href="#list" aria-label="Admin Absensi Karyawan">
-        <span class="brand-mark">AK</span>
-        <span>
-          <strong>Absensi</strong>
-          <small>Admin</small>
-        </span>
+      <a class="navbar-brand" href="#list">
+        <span class="navbar-brand-full"><strong>Admin</strong> Absensi</span>
+        <span class="navbar-brand-minimized"><strong>A</strong>A</span>
       </a>
-      <div class="navbar-meta">
-        <span class="status-dot" aria-hidden="true"></span>
-        <span id="todayLabel">Hari ini</span>
-      </div>
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item px-3 text-muted">
+          <span class="status-dot bg-success" style="width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px;"></span>
+          <span id="todayLabel">Hari ini</span>
+        </li>
+      </ul>
     </header>
 
     <div class="app-body">
-      <aside class="sidebar" id="sidebar">
-        <div class="sidebar-profile">
-          <span class="avatar">A</span>
-          <div>
-            <strong>Admin HR</strong>
-            <small>Panel Absensi</small>
-          </div>
-        </div>
-        <nav class="sidebar-nav" aria-label="Navigasi utama">
-          <a class="nav-link active" href="#list" data-view-link="list">
-            <span class="nav-icon" aria-hidden="true">#</span>
-            Data Absensi
-          </a>
-          <a class="nav-link" href="#form" data-view-link="form">
-            <span class="nav-icon" aria-hidden="true">+</span>
-            Input Absensi
-          </a>
+      <div class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+          <ul class="nav">
+            <li class="nav-title">Panel Absensi</li>
+            <li class="nav-item">
+              <a class="nav-link active" href="#list" data-view-link="list">
+                <i class="nav-icon fas fa-list"></i> Data Absensi
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#form" data-view-link="form">
+                <i class="nav-icon fas fa-plus"></i> Input Absensi
+              </a>
+            </li>
+          </ul>
         </nav>
-      </aside>
+      </div>
 
       <main class="main">
+        <!-- Breadcrumb -->
         <ol class="breadcrumb">
-          <li>Admin</li>
-          <li id="breadcrumbCurrent">Data Absensi</li>
+          <li class="breadcrumb-item">Admin</li>
+          <li class="breadcrumb-item active" id="breadcrumbCurrent">Data Absensi</li>
         </ol>
 
         <div class="container-fluid">
-          <section class="view is-active" id="view-list" data-view="list" aria-labelledby="listTitle">
-            <div class="page-heading">
-              <div>
-                <p class="eyebrow">Ayo Bermimpi x JURU</p>
-                <h1 id="listTitle">Data Absensi Karyawan</h1>
-                <p class="subtle">Kelola data karyawan yang sudah melakukan absensi.</p>
-              </div>
-              <button class="btn btn-primary" type="button" id="createRecordButton">
-                <span aria-hidden="true">+</span>
-                Tambah Absensi
-              </button>
-            </div>
-
-            <div class="stats-grid" aria-label="Ringkasan absensi">
-              <article class="stat-card">
-                <span>Total Data</span>
-                <strong id="totalRecords">0</strong>
-              </article>
-              <article class="stat-card accent-green">
-                <span>Absen Hari Ini</span>
-                <strong id="todayRecords">0</strong>
-              </article>
-              <article class="stat-card accent-yellow">
-                <span>Rata-rata Durasi</span>
-                <strong id="averageDuration">0j 0m</strong>
-              </article>
-            </div>
-
-            <div class="card table-card">
-              <div class="card-header">
-                <div>
-                  <h2>Daftar Kehadiran</h2>
-                  <p id="tableSummary">Menampilkan data absensi.</p>
+          <div class="animated fadeIn">
+            
+            <!-- List View -->
+            <section class="view" id="view-list" data-view="list">
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <h6 class="text-uppercase text-primary font-weight-bold mb-1">Ayo Bermimpi x JURU</h6>
+                  <h1 class="h3" id="listTitle">Data Absensi Karyawan</h1>
+                  <p class="text-muted">Kelola data karyawan yang sudah melakukan absensi.</p>
                 </div>
-                <div class="toolbar" aria-label="Filter tabel">
-                  <label class="input-group search-box">
-                    <span>Cari</span>
-                    <input type="search" id="searchInput" placeholder="Nama atau alamat">
-                  </label>
-                  <label class="input-group">
-                    <span>Sort by</span>
-                    <select id="sortField">
+                <div class="col-sm-6 text-sm-right">
+                  <button class="btn btn-primary mt-2" type="button" id="createRecordButton">
+                    <i class="fas fa-plus mr-1"></i> Tambah Absensi
+                  </button>
+                </div>
+              </div>
+
+              <!-- Stats Cards -->
+              <div class="row">
+                <div class="col-sm-4 col-md-4">
+                  <div class="card text-white bg-primary">
+                    <div class="card-body">
+                      <div class="text-value" id="totalRecords">0</div>
+                      <div>Total Data</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4 col-md-4">
+                  <div class="card text-white bg-success">
+                    <div class="card-body">
+                      <div class="text-value" id="todayRecords">0</div>
+                      <div>Absen Hari Ini</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4 col-md-4">
+                  <div class="card text-white bg-warning">
+                    <div class="card-body">
+                      <div class="text-value" id="averageDuration">0j 0m</div>
+                      <div>Rata-rata Durasi</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
+                  <div>
+                    <h5 class="mb-0">Daftar Kehadiran</h5>
+                    <small class="text-muted" id="tableSummary">Menampilkan data absensi.</small>
+                  </div>
+                  <div class="d-flex flex-wrap align-items-center mt-2 mt-sm-0">
+                    <div class="input-group mr-2 mb-2" style="max-width: 220px;">
+                      <div class="input-group-prepend"><span class="input-group-text"><i class="fas fa-search"></i></span></div>
+                      <input type="search" class="form-control" id="searchInput" placeholder="Nama atau alamat">
+                    </div>
+                    <select class="form-control mr-2 mb-2" id="sortField" style="width: auto;">
                       <option value="date">Tanggal absen</option>
                       <option value="name">Nama</option>
                       <option value="gender">Jenis kelamin</option>
                       <option value="timeIn">Jam masuk</option>
                       <option value="timeOut">Jam keluar</option>
                     </select>
-                  </label>
-                  <label class="input-group compact">
-                    <span>Arah</span>
-                    <select id="sortDirection">
+                    <select class="form-control mr-2 mb-2" id="sortDirection" style="width: auto;">
                       <option value="desc">Desc</option>
                       <option value="asc">Asc</option>
                     </select>
-                  </label>
-                  <label class="input-group compact">
-                    <span>Per page</span>
-                    <select id="pageSize">
-                      <option value="5">5</option>
-                      <option value="10">10</option>
-                      <option value="15">15</option>
+                    <select class="form-control mb-2" id="pageSize" style="width: auto;">
+                      <option value="5">5 baris</option>
+                      <option value="10">10 baris</option>
+                      <option value="15">15 baris</option>
                     </select>
-                  </label>
-                </div>
-              </div>
-
-              <div class="table-responsive">
-                <table class="table" aria-describedby="tableSummary">
-                  <thead>
-                    <tr>
-                      <th scope="col">
-                        <button class="sort-button" type="button" data-sort="name">Nama</button>
-                      </th>
-                      <th scope="col">Alamat</th>
-                      <th scope="col">
-                        <button class="sort-button" type="button" data-sort="gender">Jenis Kelamin</button>
-                      </th>
-                      <th scope="col">
-                        <button class="sort-button" type="button" data-sort="date">Tanggal Absen</button>
-                      </th>
-                      <th scope="col">
-                        <button class="sort-button" type="button" data-sort="timeIn">Jam Masuk</button>
-                      </th>
-                      <th scope="col">
-                        <button class="sort-button" type="button" data-sort="timeOut">Jam Keluar</button>
-                      </th>
-                      <th scope="col">Durasi</th>
-                      <th scope="col" class="action-column">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody id="attendanceTableBody"></tbody>
-                </table>
-              </div>
-
-              <div class="table-footer">
-                <p id="paginationInfo">Menampilkan 0 data.</p>
-                <nav class="pagination" id="pagination" aria-label="Pagination"></nav>
-              </div>
-            </div>
-          </section>
-
-          <section class="view" id="view-form" data-view="form" aria-labelledby="formTitle">
-            <div class="page-heading">
-              <div>
-                <p class="eyebrow">Form Absensi</p>
-                <h1 id="formTitle">Input Data Absensi</h1>
-                <p class="subtle">Lengkapi data kehadiran karyawan dengan benar.</p>
-              </div>
-              <button class="btn btn-light" type="button" id="backToListButton">
-                <span aria-hidden="true">&lt;</span>
-                Kembali
-              </button>
-            </div>
-
-            <div class="card form-card">
-              <form id="attendanceForm" novalidate>
-                <input type="hidden" id="recordId">
-                <div class="form-grid">
-                  <label class="form-field">
-                    <span>Nama</span>
-                    <input type="text" id="name" placeholder="Contoh: Raka Pratama" autocomplete="name" required>
-                    <small class="error-text" data-error-for="name"></small>
-                  </label>
-
-                  <label class="form-field">
-                    <span>Jenis kelamin</span>
-                    <select id="gender" required>
-                      <option value="">Pilih jenis kelamin</option>
-                      <option value="Laki-laki">Laki-laki</option>
-                      <option value="Perempuan">Perempuan</option>
-                    </select>
-                    <small class="error-text" data-error-for="gender"></small>
-                  </label>
-
-                  <label class="form-field full">
-                    <span>Alamat</span>
-                    <textarea id="address" rows="3" placeholder="Contoh: Jl. Melati No. 12, Bandung" required></textarea>
-                    <small class="error-text" data-error-for="address"></small>
-                  </label>
-
-                  <label class="form-field">
-                    <span>Tanggal absen</span>
-                    <input type="date" id="date" required>
-                    <small class="error-text" data-error-for="date"></small>
-                  </label>
-
-                  <label class="form-field">
-                    <span>Jam masuk</span>
-                    <input type="time" id="timeIn" required>
-                    <small class="error-text" data-error-for="timeIn"></small>
-                  </label>
-
-                  <label class="form-field">
-                    <span>Jam keluar</span>
-                    <input type="time" id="timeOut" required>
-                    <small class="error-text" data-error-for="timeOut"></small>
-                  </label>
+                  </div>
                 </div>
 
-                <div class="form-actions">
-                  <button class="btn btn-light" type="button" id="resetFormButton">Reset</button>
-                  <button class="btn btn-primary" type="submit" id="submitButton">
-                    <span aria-hidden="true">OK</span>
-                    Simpan Absensi
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                      <thead class="thead-light">
+                        <tr>
+                          <th><button class="btn btn-link p-0 font-weight-bold text-dark sort-button" type="button" data-sort="name">Nama</button></th>
+                          <th>Alamat</th>
+                          <th><button class="btn btn-link p-0 font-weight-bold text-dark sort-button" type="button" data-sort="gender">Jenis Kelamin</button></th>
+                          <th><button class="btn btn-link p-0 font-weight-bold text-dark sort-button" type="button" data-sort="date">Tanggal Absen</button></th>
+                          <th><button class="btn btn-link p-0 font-weight-bold text-dark sort-button" type="button" data-sort="timeIn">Jam Masuk</button></th>
+                          <th><button class="btn btn-link p-0 font-weight-bold text-dark sort-button" type="button" data-sort="timeOut">Jam Keluar</button></th>
+                          <th>Durasi</th>
+                          <th class="text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="card-footer d-flex flex-wrap align-items-center justify-content-between">
+                  <p class="text-muted mb-2 mb-sm-0" id="paginationInfo">Menampilkan 0 data.</p>
+                  <nav id="pagination" aria-label="Pagination"></nav>
+                </div>
+              </div>
+            </section>
+
+            <!-- Form View -->
+            <section class="view d-none" id="view-form" data-view="form">
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <h6 class="text-uppercase text-primary font-weight-bold mb-1">Form Absensi</h6>
+                  <h1 class="h3" id="formTitle">Input Data Absensi</h1>
+                  <p class="text-muted">Lengkapi data kehadiran karyawan dengan benar.</p>
+                </div>
+                <div class="col-sm-6 text-sm-right">
+                  <button class="btn btn-secondary mt-2" type="button" id="backToListButton">
+                    <i class="fas fa-chevron-left mr-1"></i> Kembali
                   </button>
                 </div>
-              </form>
-            </div>
-          </section>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <strong>Form Data Karyawan</strong>
+                </div>
+                <div class="card-body">
+                  <form id="attendanceForm" novalidate>
+                    <input type="hidden" id="recordId">
+                    <div class="row">
+                      <div class="col-md-6 form-group">
+                        <label for="name">Nama</label>
+                        <input type="text" class="form-control" id="name" placeholder="Contoh: Raka Pratama" autocomplete="name" required>
+                        <div class="invalid-feedback" data-error-for="name"></div>
+                      </div>
+                      <div class="col-md-6 form-group">
+                        <label for="gender">Jenis kelamin</label>
+                        <select class="form-control" id="gender" required>
+                          <option value="">Pilih jenis kelamin</option>
+                          <option value="Laki-laki">Laki-laki</option>
+                          <option value="Perempuan">Perempuan</option>
+                        </select>
+                        <div class="invalid-feedback" data-error-for="gender"></div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="address">Alamat</label>
+                      <textarea class="form-control" id="address" rows="3" placeholder="Contoh: Jl. Melati No. 12, Bandung" required></textarea>
+                      <div class="invalid-feedback" data-error-for="address"></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4 form-group">
+                        <label for="date">Tanggal absen</label>
+                        <input type="date" class="form-control" id="date" required>
+                        <div class="invalid-feedback" data-error-for="date"></div>
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="timeIn">Jam masuk</label>
+                        <input type="time" class="form-control" id="timeIn" required>
+                        <div class="invalid-feedback" data-error-for="timeIn"></div>
+                      </div>
+                      <div class="col-md-4 form-group">
+                        <label for="timeOut">Jam keluar</label>
+                        <input type="time" class="form-control" id="timeOut" required>
+                        <div class="invalid-feedback" data-error-for="timeOut"></div>
+                      </div>
+                    </div>
+                    <div class="form-actions mt-3">
+                      <button class="btn btn-primary mr-2" type="submit" id="submitButton">
+                        <i class="fas fa-save mr-1"></i> Simpan Absensi
+                      </button>
+                      <button class="btn btn-secondary" type="button" id="resetFormButton">
+                        <i class="fas fa-undo mr-1"></i> Reset
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </section>
+
+          </div>
         </div>
       </main>
     </div>
 
-    <div class="modal-backdrop is-hidden" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
-      <div class="modal-card">
-        <h2 id="deleteTitle">Hapus data absensi?</h2>
-        <p>Data yang dihapus tidak bisa dikembalikan dari daftar lokal.</p>
-        <div class="modal-actions">
-          <button class="btn btn-light" type="button" id="cancelDeleteButton">Batal</button>
-          <button class="btn btn-danger" type="button" id="confirmDeleteButton">Hapus</button>
+    <!-- Modal Delete -->
+    <div class="modal d-none" id="deleteModal" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteTitle">Hapus data absensi?</h5>
+          </div>
+          <div class="modal-body">
+            <p>Data yang dihapus tidak bisa dikembalikan dari daftar lokal.</p>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" id="cancelDeleteButton">Batal</button>
+            <button class="btn btn-danger" type="button" id="confirmDeleteButton">Hapus</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <!-- Toast Notification -->
+    <div class="toast custom-toast d-none" id="toast" role="status" aria-live="polite"></div>
 
     <script src="js/app.js"></script>
   </body>

@@ -187,7 +187,7 @@
     });
 
     elements.sidebarToggle.addEventListener("click", () => {
-      elements.sidebar.classList.toggle("is-open");
+      document.body.classList.toggle("sidebar-show");
     });
 
     elements.createRecordButton.addEventListener("click", openCreateForm);
@@ -250,7 +250,8 @@
 
       if (button.dataset.action === "delete") {
         state.deleteId = record.id;
-        elements.deleteModal.classList.remove("is-hidden");
+        elements.deleteModal.classList.remove("d-none");
+        elements.deleteModal.classList.add("d-block");
       }
     });
 
@@ -362,10 +363,10 @@
         <td>${record.timeIn}</td>
         <td>${record.timeOut}</td>
         <td>${formatDuration(getDurationMinutes(record.timeIn, record.timeOut))}</td>
-        <td class="action-column">
-          <div class="actions">
-            <button class="icon-btn edit" type="button" title="Update data" aria-label="Update data ${escapeHtml(record.name)}" data-action="edit" data-id="${record.id}">U</button>
-            <button class="icon-btn danger" type="button" title="Delete data" aria-label="Delete data ${escapeHtml(record.name)}" data-action="delete" data-id="${record.id}">X</button>
+        <td class="text-center">
+          <div class="btn-group" role="group">
+            <button class="btn btn-sm btn-success" type="button" title="Update data" aria-label="Update data ${escapeHtml(record.name)}" data-action="edit" data-id="${record.id}"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-danger" type="button" title="Delete data" aria-label="Delete data ${escapeHtml(record.name)}" data-action="delete" data-id="${record.id}"><i class="fas fa-trash-alt"></i></button>
           </div>
         </td>
       </tr>
@@ -376,22 +377,39 @@
     const endIndex = visibleCount ? startIndex + visibleCount : 0;
     const startLabel = visibleCount ? startIndex + 1 : 0;
     elements.paginationInfo.textContent = `Menampilkan ${startLabel}-${endIndex} dari ${totalItems} data.`;
-
-    const buttons = [
-      paginationButton("Prev", Math.max(1, state.currentPage - 1), state.currentPage === 1)
-    ];
-
-    for (let page = 1; page <= totalPages; page += 1) {
-      buttons.push(paginationButton(String(page), page, false, page === state.currentPage));
+    
+    if (totalPages <= 1) {
+      elements.pagination.innerHTML = "";
+      return;
     }
 
-    buttons.push(paginationButton("Next", Math.min(totalPages, state.currentPage + 1), state.currentPage === totalPages));
-    elements.pagination.innerHTML = buttons.join("");
+    let html = '<div class="btn-group" role="group">';
+    html += paginationButton("Prev", Math.max(1, state.currentPage - 1), state.currentPage === 1, false);
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= state.currentPage - 1 && i <= state.currentPage + 1)
+      ) {
+        html += paginationButton(String(i), i, false, i === state.currentPage);
+      } else if (
+        i === state.currentPage - 2 ||
+        i === state.currentPage + 2
+      ) {
+        html += `<button class="btn btn-sm btn-outline-primary" disabled>...</button>`;
+      }
+    }
+
+    html += paginationButton("Next", Math.min(totalPages, state.currentPage + 1), state.currentPage === totalPages, false);
+    html += '</div>';
+    
+    elements.pagination.innerHTML = html;
   }
 
   function paginationButton(label, page, disabled, active) {
     return `
-      <button class="page-button ${active ? "is-active" : ""}" type="button" data-page="${page}" ${disabled ? "disabled" : ""}>
+      <button class="btn btn-sm ${active ? "btn-primary" : "btn-outline-primary"}" type="button" data-page="${page}" ${disabled ? "disabled" : ""}>
         ${label}
       </button>
     `;
@@ -468,15 +486,14 @@
   function showErrors(errors) {
     Object.entries(errors).forEach(([fieldName, message]) => {
       const field = fields[fieldName];
-      const wrapper = field.closest(".form-field");
       const errorText = document.querySelector(`[data-error-for="${fieldName}"]`);
-      wrapper.classList.add("has-error");
+      field.classList.add("is-invalid");
       errorText.textContent = message;
     });
   }
 
   function clearErrors() {
-    document.querySelectorAll(".form-field").forEach((field) => field.classList.remove("has-error"));
+    document.querySelectorAll(".is-invalid").forEach((field) => field.classList.remove("is-invalid"));
     document.querySelectorAll("[data-error-for]").forEach((error) => {
       error.textContent = "";
     });
@@ -497,7 +514,7 @@
     fields.timeIn.value = record.timeIn;
     fields.timeOut.value = record.timeOut;
     elements.formTitle.textContent = "Update Data Absensi";
-    elements.submitButton.innerHTML = '<span aria-hidden="true">OK</span> Update Absensi';
+    elements.submitButton.innerHTML = '<i class="fas fa-save mr-1"></i> Update Absensi';
     showView("form");
   }
 
@@ -507,12 +524,12 @@
     fields.recordId.value = "";
     fields.date.value = toDateInputValue(new Date());
     elements.formTitle.textContent = "Input Data Absensi";
-    elements.submitButton.innerHTML = '<span aria-hidden="true">OK</span> Simpan Absensi';
+    elements.submitButton.innerHTML = '<i class="fas fa-save mr-1"></i> Simpan Absensi';
   }
 
   function showView(viewName) {
     elements.views.forEach((view) => {
-      view.classList.toggle("is-active", view.dataset.view === viewName);
+      view.classList.toggle("d-none", view.dataset.view !== viewName);
     });
 
     elements.viewLinks.forEach((link) => {
@@ -520,7 +537,7 @@
     });
 
     elements.breadcrumbCurrent.textContent = viewName === "form" ? "Input Absensi" : "Data Absensi";
-    elements.sidebar.classList.remove("is-open");
+    document.body.classList.remove("sidebar-show");
   }
 
   function deleteSelectedRecord() {
@@ -536,7 +553,8 @@
 
   function closeDeleteModal() {
     state.deleteId = null;
-    elements.deleteModal.classList.add("is-hidden");
+    elements.deleteModal.classList.remove("d-block");
+    elements.deleteModal.classList.add("d-none");
   }
 
   function getDurationMinutes(timeIn, timeOut) {
@@ -578,10 +596,14 @@
 
   function showToast(message) {
     elements.toast.textContent = message;
-    elements.toast.classList.add("is-visible");
+    elements.toast.classList.remove("d-none");
+    // force reflow
+    void elements.toast.offsetWidth;
+    elements.toast.classList.add("show");
     window.clearTimeout(showToast.timer);
     showToast.timer = window.setTimeout(() => {
-      elements.toast.classList.remove("is-visible");
+      elements.toast.classList.remove("show");
+      setTimeout(() => elements.toast.classList.add("d-none"), 180);
     }, 2800);
   }
 

@@ -384,7 +384,7 @@
     }
 
     let html = '<div class="btn-group" role="group">';
-    html += paginationButton("Prev", Math.max(1, state.currentPage - 1), state.currentPage === 1, false);
+    html += paginationButton("&lt;", Math.max(1, state.currentPage - 1), state.currentPage === 1, false, "Halaman sebelumnya");
 
     for (let i = 1; i <= totalPages; i++) {
       if (
@@ -392,7 +392,7 @@
         i === totalPages ||
         (i >= state.currentPage - 1 && i <= state.currentPage + 1)
       ) {
-        html += paginationButton(String(i), i, false, i === state.currentPage);
+        html += paginationButton(String(i), i, false, i === state.currentPage, `Halaman ${i}`);
       } else if (
         i === state.currentPage - 2 ||
         i === state.currentPage + 2
@@ -401,15 +401,15 @@
       }
     }
 
-    html += paginationButton("Next", Math.min(totalPages, state.currentPage + 1), state.currentPage === totalPages, false);
+    html += paginationButton("&gt;", Math.min(totalPages, state.currentPage + 1), state.currentPage === totalPages, false, "Halaman berikutnya");
     html += '</div>';
     
     elements.pagination.innerHTML = html;
   }
 
-  function paginationButton(label, page, disabled, active) {
+  function paginationButton(label, page, disabled, active, ariaLabel) {
     return `
-      <button class="btn btn-sm ${active ? "btn-primary" : "btn-outline-primary"}" type="button" data-page="${page}" ${disabled ? "disabled" : ""}>
+      <button class="btn btn-sm pagination-btn ${active ? "btn-primary" : "btn-outline-primary"}" type="button" data-page="${page}" aria-label="${ariaLabel}" ${disabled ? "disabled" : ""}>
         ${label}
       </button>
     `;

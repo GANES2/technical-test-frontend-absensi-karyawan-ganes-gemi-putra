@@ -269,9 +269,9 @@
   function loadRecords() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      return Array.isArray(saved) && saved.length ? saved : seedRecords;
+      return Array.isArray(saved) ? saved : [...seedRecords];
     } catch (error) {
-      return seedRecords;
+      return [...seedRecords];
     }
   }
 

@@ -5,6 +5,9 @@ Project ini dibuat untuk Technical Test Frontend Web Developer Intern Ayo Bermim
 Repository:
 https://github.com/GANES2/technical-test-frontend-absensi-karyawan-ganes-gemi-putra
 
+Live Demo:
+https://ganes2.github.io/technical-test-frontend-absensi-karyawan-ganes-gemi-putra/
+
 ## Ringkasan Project
 
 Aplikasi ini menyediakan fitur pengelolaan data absensi karyawan secara frontend. Data disimpan menggunakan `localStorage`, sehingga perubahan data tetap tersimpan saat halaman direfresh selama masih menggunakan browser yang sama.
